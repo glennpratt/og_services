@@ -102,7 +102,8 @@ function _og_services_services_resources_alter(&$resources, $endpoint) {
 /*
  * Join callback function that saves a user's subscription to a group.
  */
-function _og_services_subscribe_user($gid, $uid) {
+function _og_services_subscribe_user($gid, $unknown, $uid) {
+  //APCIHACK - GPRATT - For some reason arg 0 and 1 to this func are the group ID.
   return og_subscribe_user($gid, user_load($uid));
 }
 
