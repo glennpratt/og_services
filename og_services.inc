@@ -110,7 +110,8 @@ function _og_services_subscribe_user($gid, $unknown, $uid) {
 /*
  * Unjoin callback function.
  */
-function _og_services_unsubscribe_user($gid, $uid) {
+function _og_services_unsubscribe_user($gid, $unknown, $uid) {
+  //APCIHACK - GPRATT - For some reason arg 0 and 1 to this func are the group ID.
   global $user;
   $group_node = node_load($gid);
   $account = user_load($uid);
