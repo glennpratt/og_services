@@ -104,7 +104,18 @@ function _og_services_services_resources_alter(&$resources, $endpoint) {
  */
 function _og_services_subscribe_user($gid, $unknown, $uid) {
   //APCIHACK - GPRATT - For some reason arg 0 and 1 to this func are the group ID.
-  return og_subscribe_user($gid, user_load($uid));
+  if (!node_load($gid)) {
+    return services_error('Group not found', 404);
+  }
+  $account = user_load($uid);
+  if (!$account) {
+    return services_error('User not found', 404);
+  }
+  $subscribe = og_subscribe_user($gid, $account);
+  if (is_array($subscribe) && $subscribe['type'] == 'rejected') {
+    return services_error(implode("\n", $subscribe), 403);
+  }
+  return $subscribe;
 }
 
 /*
@@ -114,7 +125,13 @@ function _og_services_unsubscribe_user($gid, $unknown, $uid) {
   //APCIHACK - GPRATT - For some reason arg 0 and 1 to this func are the group ID.
   global $user;
   $group_node = node_load($gid);
+  if (!$group_node) {
+    return services_error('Group not found', 404);
+  }
   $account = user_load($uid);
+  if (!$account) {
+    return services_error('User not found', 404);
+  }
   og_delete_subscription($gid, $uid);
   // If needed, reload user object to reflect unsubscribed group.
   if ($user->uid == $account->uid) {
